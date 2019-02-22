@@ -1,1 +1,23 @@
-mybatis study
+# mybatis学习笔记
+## 架构：springboot+mybatis+swagger-ui+mysql
+## 地址:http://39.108.8.0:8081/swagger-ui.html
+## BaseController
+    * getById
+    * insertReturnAutoId
+## BatchController
+    * insertBatch
+    * insertBatch2
+## PageController
+    * pageByLimitClause
+    * pageByPageHelper
+## PluginController
+    * update
+## TypeHadnlerController
+    * getByIDUseTypeHandler
+    * insertUseTypeHandler
+## UnionSelectController
+    * getBlogWithAuthorById
+    * getBlogWithAuthorById2
+    * getAuthorWithBlogsById
+    * getAuthorWithBlogsById2
+    * getAuthorNameById
