@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yuanyk.springbootmybatis.mapper.BlogWithAuthorMapper">
+    <!--嵌套查询，先根据blogId查blog表，再根据blog表查出的authorId去查author表 start
+        2次查询，性能慢
+    -->
+    <resultMap id="UnionResultMap" type="com.yuanyk.springbootmybatis.pojo.BlogWithAuthor">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="name" property="name" jdbcType="VARCHAR"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
+        <association property="author" column="author_id" javaType="com.yuanyk.springbootmybatis.pojo.Author"
+                     select="com.yuanyk.springbootmybatis.mapper.BlogWithAuthorMapper.selectAuthorById"/>
+    </resultMap>
+    <resultMap id="AuthorResultMap" type="com.yuanyk.springbootmybatis.pojo.Author">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="nickname" property="nickname" jdbcType="VARCHAR"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+    id, name, create_time, update_time, author_id
+  </sql>
+
+    <select id="selectAuthorById" resultMap="AuthorResultMap">
+        select * from author where id = #{id,jdbcType=INTEGER}
+    </select>
+
+
+    <select id="selectBlogWithAuthor" resultMap="UnionResultMap" parameterType="java.lang.Integer">
+        select
+        <include refid="Base_Column_List"/>
+        from blog
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+    <!--嵌套查询，先根据blogId查blog表，再根据blog表查出的authorId去查author表 end-->
+
+
+
+    <!--嵌套结果，一次查询 start-->
+    <resultMap id="UnionResultMap2" type="com.yuanyk.springbootmybatis.pojo.BlogWithAuthor">
+        <id column="bid" property="id" jdbcType="INTEGER"/>
+        <result column="bname" property="name" jdbcType="VARCHAR"/>
+        <result column="bct" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="but" property="updateTime" jdbcType="TIMESTAMP"/>
+        <association property="author" javaType="com.yuanyk.springbootmybatis.pojo.Author">
+            <id column="aid" property="id"/>
+            <result column="aname" property="nickname" jdbcType="VARCHAR"/>
+            <result column="act" property="createTime" jdbcType="TIMESTAMP"/>
+            <result column="aut" property="updateTime" jdbcType="TIMESTAMP"/>
+        </association>
+    </resultMap>
+
+    <select id="selectBlogWithAuthor2" resultMap="UnionResultMap2" parameterType="java.lang.Integer">
+        select
+        b.id as bid,b.name as bname,b.create_time as bct,b.update_time as but,
+        a.id as aid,a.nickname as aname,a.create_time as act,a.update_time as aut
+        from blog b,author a
+        where b.author_id = a.id
+         and b.id = #{id,jdbcType=INTEGER}
+    </select>
+    <!--嵌套结果，一次查询 end-->
+
+
+
+</mapper>
